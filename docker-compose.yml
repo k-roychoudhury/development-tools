@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  local_postgres:
+    image: "postgres:latest"
+    restart: "unless-stopped"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - ${POSTGRES_EXPOSE_PORT}:5432  # internal container port
+    volumes: 
+      - ${VOLUMES_BASE_DIR}/postgresql:/var/lib/postgresql/data
+
+networks:
+  default: 
+    name: "development-tools-network"
