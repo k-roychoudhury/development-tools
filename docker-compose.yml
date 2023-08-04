@@ -27,9 +27,22 @@ services:
     depends_on:
       - local_postgres
 
+  local_mongodb:
+    container_name: "local_mongodb"
+    image: "mongo:latest"
+    restart: "unless-stopped"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - ${MONGO_EXPOSE_PORT}:27017
+    volumes:
+      - "${VOLUMES_BASE_DIR}/mongodb:/data/db"
+
 networks:
   default: 
     name: "development-tools-network"
+    attachable: true  # allows other containers/compose projects to connect to this network
 
 
 # to run the tools, use the following command:
