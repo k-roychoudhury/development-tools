@@ -1,0 +1,64 @@
+version: "3.8"
+
+services:
+  local_postgres:
+    container_name: "local_postgres"
+    image: "postgres:latest"
+    restart: "unless-stopped"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - ${POSTGRES_EXPOSE_PORT}:5432  # internal container port
+    volumes: 
+      - ${VOLUMES_BASE_DIR}/postgresql:/var/lib/postgresql/data
+
+  local_postgres_admin:
+    container_name: pgadmin4_container
+    image: "dpage/pgadmin4:latest"
+    restart: "unless-stopped"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - ${PGADMIN_EXPOSE_PORT}:80 # internal container port
+    volumes: 
+      - ${VOLUMES_BASE_DIR}/pgadmin:/var/lib/pgadmin
+    depends_on:
+      - local_postgres
+
+  local_mongodb:
+    container_name: "local_mongodb"
+    image: "mongo:latest"
+    restart: "unless-stopped"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - ${MONGO_EXPOSE_PORT}:27017
+    volumes:
+      - ${VOLUMES_BASE_DIR}/mongodb:/data/db
+
+  local_rabbitmq:
+    container_name: "local_rabbitmq"
+    image: "rabbitmq:3-management"  #this specific image has the Web UI enabled by default
+    restart: "unless-stopped"
+    ports:
+        - ${RABBITMQ_AMQP_EXPOSE_PORT}:5672
+        - ${RABBITMQ_MANAGEMENT_EXPOSE_PORT}:15672
+    environment:
+        - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+        - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    volumes:
+        - ${VOLUMES_BASE_DIR}/rabbitmq:/var/lib/rabbitmq
+
+networks:
+  default: 
+    name: "development-tools-network"
+    attachable: true  # allows other containers/compose projects to connect to this network
+
+
+# to run the tools, use the following command:
+# docker compose --env-file ./env/.env up
+
+# make sure the file ./env/.env is present; use the ./env/.env.template to produce it
