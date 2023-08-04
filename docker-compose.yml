@@ -37,7 +37,20 @@ services:
     ports:
       - ${MONGO_EXPOSE_PORT}:27017
     volumes:
-      - "${VOLUMES_BASE_DIR}/mongodb:/data/db"
+      - ${VOLUMES_BASE_DIR}/mongodb:/data/db
+
+  local_rabbitmq:
+    container_name: "local_rabbitmq"
+    image: "rabbitmq:3-management"  #this specific image has the Web UI enabled by default
+    restart: "unless-stopped"
+    ports:
+        - ${RABBITMQ_AMQP_EXPOSE_PORT}:5672
+        - ${RABBITMQ_MANAGEMENT_EXPOSE_PORT}:15672
+    environment:
+        - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+        - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    volumes:
+        - ${VOLUMES_BASE_DIR}/rabbitmq:/var/lib/rabbitmq
 
 networks:
   default: 
