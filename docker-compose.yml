@@ -52,23 +52,23 @@ services:
     volumes:
         - ${VOLUMES_BASE_DIR}/rabbitmq:/var/lib/rabbitmq
 
-  local_grafana:
-    container_name: "local_grafana"
-    image: "grafana/grafana:latest"
-    restart: "unless-stopped"
-    ports:
-      - ${GRAFANA_EXPOSE_PORT}:3000
-    volumes:
-      - ${VOLUMES_BASE_DIR}/grafana:/var/lib/grafana
+  # local_grafana:
+  #   container_name: "local_grafana"
+  #   image: "grafana/grafana:latest"
+  #   restart: "unless-stopped"
+  #   ports:
+  #     - ${GRAFANA_EXPOSE_PORT}:3000
+  #   volumes:
+  #     - ${VOLUMES_BASE_DIR}/grafana:/var/lib/grafana
 
-  local_prometheus:
-    container_name: "local_prometheus"
-    image: "prom/prometheus:latest"
-    ports:
-      - ${PROMETHEUS_EXPOSE_PORT}:9090
-    volumes:
-      - ./config/prometheus:/etc/prometheus
-      - ${VOLUMES_BASE_DIR}/prometheus:/prometheus
+  # local_prometheus:
+  #   container_name: "local_prometheus"
+  #   image: "prom/prometheus:latest"
+  #   ports:
+  #     - ${PROMETHEUS_EXPOSE_PORT}:9090
+  #   volumes:
+  #     - ./config/prometheus:/etc/prometheus
+  #     - ${VOLUMES_BASE_DIR}/prometheus:/prometheus
 
   local_standalone_redis:
     container_name: "local_standalone_redis"
@@ -82,19 +82,26 @@ services:
     volumes: 
       - ${VOLUMES_BASE_DIR}/redis:/data
 
-  local_redis_exporter:
-    container_name: "local_redis_exporter"
-    image: "oliver006/redis_exporter:latest"
+  # local_redis_exporter:
+  #   container_name: "local_redis_exporter"
+  #   image: "oliver006/redis_exporter:latest"
+  #   restart: "unless-stopped"
+  #   ports:
+  #     - ${REDIS_EXPORTER_EXPOSE_PORT}:9121
+  #   environment:
+  #     - REDIS_ADDR=local_standalone_redis:6379
+  #     # - REDIS_USER: null
+  #     - REDIS_PASSWORD=${REDIS_PASSWORD}
+  #   links:
+  #     - local_standalone_redis
+  #     - local_prometheus
+  
+  local_memcached:
+    container_name: "local_memcached"
+    image: "memcached:latest"
     restart: "unless-stopped"
     ports:
-      - ${REDIS_EXPORTER_EXPOSE_PORT}:9121
-    environment:
-      - REDIS_ADDR=local_standalone_redis:6379
-      # - REDIS_USER: null
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-    links:
-      - local_standalone_redis
-      - local_prometheus
+      - ${MEMCACHED_EXPOSE_PORT}:11211
     
 networks:
   default: 
